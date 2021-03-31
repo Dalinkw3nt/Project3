@@ -245,7 +245,7 @@ jobs:
       - run:
           name: Create/Update frontend infrastructure via AWS CloudFormation
           command: |
-            aws cloudformation deploy \
+            aws cloudformation create-stack \
               --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID} \
               --template-file .circleci/files/frontend.yml \
               --region ${AWS_DEFAULT_REGION} \
@@ -253,7 +253,7 @@ jobs:
       - run:
           name: Create/Update backend infrastructure via AWS CloudFormation
           command: |
-            aws cloudformation deploy \
+            aws cloudformation create-stack \
               --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID} \
               --template-file .circleci/files/backend.yml \
               --region ${AWS_DEFAULT_REGION} \
@@ -423,7 +423,7 @@ jobs:
             STACKS=$(aws cloudformation list-stacks --query "StackSummaries[*].StackName" --stack-status-filter UPDATE_COMPLETE CREATE_COMPLETE --output text)
             echo STACKS=${STACKS}
             echo "Create/Update CloudFront"
-            aws cloudformation deploy \
+            aws cloudformation create-stack \
               --stack-name udapeople-cloudfront \
               --template-file .circleci/files/cloudfront.yml \
               --region ${AWS_DEFAULT_REGION} \
