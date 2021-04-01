@@ -405,7 +405,7 @@ jobs:
           working_directory: ./backend
           command: |
             export BACKEND_URL=$(curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/PUBLIC_DNS)
-            curl BACKEND_URLapi/status
+            curl $BACKEND_URL/api/status
 
       - revert-migration
       - destroy-aws-resource
