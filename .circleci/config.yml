@@ -316,8 +316,10 @@ jobs:
             sudo ./aws/install
       - run:
           name: Run migrations
+          no_output_timeout: 30m
           working_directory: ./backend
           command: |
+            npm install
             npm run migrations > migration.log
             export migration_status=$(cat migration.log | grep -c "has been executed successfully")
 
