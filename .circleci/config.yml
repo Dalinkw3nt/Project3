@@ -298,7 +298,7 @@ jobs:
             aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters 'Name=tag:udapeople,Values=udapeople-backend-ec2-*' --output text >> .circleci/ansible/inventory.txt
             curl -H "Content-Type: text/plain" -H "token: f3b8cd2f-30f9-4cf2-bfe6-0bf40a948839" --request PUT --data "${PUBLIC_DNS}" https://api.memstash.io/values/public_dns
       
-      - destroy-aws-resource
+
 
   run-migrations:
     executor: node
@@ -438,9 +438,8 @@ jobs:
             BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters 'Name=tag:udapeople,Values=udapeople-backend-ec2-* --output text) 
             echo ${BACKEND_IP}
             curl "http://${BACKEND_IP}:3030/api/status"
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-          
+
+
       - run:
           name: Smoke test on frontend
           command: |
@@ -453,18 +452,6 @@ jobs:
             else
               return 1
             fi
-      # - run:
-      #     name: Smoke test on backend
-      #     working_directory: ./backend
-      #     command: |
-      #       PUBLIC_DNS=$(curl -H "token: f3b8cd2f-30f9-4cf2-bfe6-0bf40a948839" --request GET https://api.memstash.io/values/public_dns)
-      #       echo ${PUBLIC_DNS}
-      #       if curl -s "http://${PUBLIC_DNS}:3030/api/status" | grep "ok"
-      #       then
-      #         return 0
-      #       else
-      #         return 1
-      #       fi
 
       - revert-migration
       - destroy-aws-resource
