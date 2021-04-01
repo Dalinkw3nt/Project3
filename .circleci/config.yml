@@ -403,7 +403,7 @@ jobs:
       - run:
           name: Smoke test on backend
           command: |
-            PUBLIC_DNS=$(curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/BACKEND_URL
+            PUBLIC_DNS=$(curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/BACKEND_URL)
             echo ${PUBLIC_DNS}
             if curl -s "http://${BACKEND_URL}:3030/api/status" | grep -q "ok"
             then
