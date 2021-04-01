@@ -429,12 +429,11 @@ jobs:
       - run:
           name: Get backend url
           command: |
-              # your code here
-              export BACKEND_URL=$(sed -n 2p .circleci/ansible/inventory.txt)
+            # your code here
+            export BACKEND_URL=$(sed -n 2p .circleci/ansible/inventory.txt)
       - run:
           name: Backend smoke test.
           command: |
-              
             echo "Printing Backend Url"
             echo $(sed -n 2p .circleci/ansible/inventory.txt)
             echo "Curling > $(sed -n 2p .circleci/ansible/inventory.txt):3030/api/status"
