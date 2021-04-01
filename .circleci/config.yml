@@ -38,7 +38,7 @@ commands:
       - run:
           name: Get the public DNS of EC2 instance from https://memstash.io/
           command: |
-            PUBLIC_DNS=$(curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/public_dns)
+            PUBLIC_DNS=$(curl -H "token: f3b8cd2f-30f9-4cf2-bfe6-0bf40a948839" --request GET https://api.memstash.io/values/public_dns)
             echo ${PUBLIC_DNS}
             cd .circleci/ansible/
             echo "[all]" > ./inventory
@@ -51,7 +51,7 @@ commands:
           name: Revert the last migration
           working_directory: ./backend
           command: |
-            SUCCESS=$(curl -H "token: 2a9e15d6-b9fa-4b1f-a5dc-e3b9643a9b63" --request GET https://api.memstash.io/values/DB_MIGRATION_${CIRCLE_WORKFLOW_ID:0:7})
+            SUCCESS=$(curl -H "token: f3b8cd2f-30f9-4cf2-bfe6-0bf40a948839" --request GET https://api.memstash.io/values/DB_MIGRATION_${CIRCLE_WORKFLOW_ID:0:7})
             echo $SUCCESS
             if [[ "$SUCCESS" == "success" ]]
             then
@@ -414,7 +414,7 @@ jobs:
           name: Smoke test on backend
           working_directory: ./backend
           command: |
-            PUBLIC_DNS=$(curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/public_dns)
+            PUBLIC_DNS=$(curl -H "token: f3b8cd2f-30f9-4cf2-bfe6-0bf40a948839" --request GET https://api.memstash.io/values/public_dns)
             echo ${PUBLIC_DNS}
             if curl -s "http://${PUBLIC_DNS}:3030/api/status" | grep "ok"
             then
