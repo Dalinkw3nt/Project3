@@ -293,8 +293,7 @@ jobs:
           name: Run migrations
           working_directory: ./backend
           command: |
-            sudo npm install -g npm@7.7.6
-            sudo chown -R $(whoami) /.npm
+            npm install -g npm@7.7.6
             sudo npm run migrations > migration_status
 
       - run:
