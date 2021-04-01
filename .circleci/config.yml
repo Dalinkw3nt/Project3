@@ -309,10 +309,10 @@ jobs:
             fi
             echo "WorkflowID=${CIRCLE_WORKFLOW_ID:0:7}"
 
-     # Here's where you will add some code to rollback on failure      
-      - destroy_environment:
-          id: ${CIRCLE_WORKFLOW_ID:0:7}
-          when: on_fail
+    #  # Here's where you will add some code to rollback on failure      
+    #   - destroy_environment:
+    #       id: ${CIRCLE_WORKFLOW_ID:0:7}
+    #       when: on_fail
 
   deploy-backend:
     docker:
@@ -533,20 +533,20 @@ workflows:
           filters:
             branches:
               only: master
-      - run-migrations:
-          requires:
-            - test-backend
-            - test-frontend
-            - scan-backend
-            - scan-frontend
-            - configure-infrastructure
-          filters:
-            branches:
-              only:
-                - master
-      - deploy-backend:
-          requires:
-            - run-migrations
-      - deploy-frontend:
-          requires:
-            - run-migrations        
+      # - run-migrations:
+      #     requires:
+      #       - test-backend
+      #       - test-frontend
+      #       - scan-backend
+      #       - scan-frontend
+      #       - configure-infrastructure
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      # - deploy-backend:
+      #     requires:
+      #       - run-migrations
+      # - deploy-frontend:
+      #     requires:
+      #       - run-migrations        
