@@ -57,16 +57,6 @@ commands:
     description: Revert the latest migration
     parameters:
     steps:
-      - run:
-          name: Get the public DNS of EC2 instance from https://memstash.io/
-          command: |
-            PUBLIC_DNS=$(curl -H "token: f3b8cd2f-30f9-4cf2-bfe6-0bf40a948839" --request GET https://api.memstash.io/values/public_dns)
-            echo ${PUBLIC_DNS}
-            cd .circleci/ansible/
-            echo "[all]" > .circleci/ansible/inventory.txt
-            echo ${PUBLIC_DNS} >> .circleci/ansible/inventory.txt
-            cat .circleci/ansible/inventory.txt
-          when: on_fail
       - add_ssh_keys:
           fingerprints: ["f2:e7:96:70:ce:5d:29:68:ec:2d:1d:33:71:52:8b:05"] # get it from CircleCI -> Project Settings -> SSH Keys -> Additional SSH Keys
       - run:
