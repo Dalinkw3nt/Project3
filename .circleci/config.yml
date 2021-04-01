@@ -516,13 +516,13 @@ workflows:
               only: master
       - deploy-backend:
           requires:
-            - create-new-infrastructure
+            - run-migrations
           filters:
             branches:
               only: master
       - deploy-frontend:
           requires:
-            - deploy-backend
+            - run-migrations
           filters:
             branches:
               only: master
@@ -539,20 +539,11 @@ workflows:
           filters:
             branches:
               only: master
-      # - run-migrations:
-      #     requires:
-      #       - test-backend
-      #       - test-frontend
-      #       - scan-backend
-      #       - scan-frontend
-      #       - configure-infrastructure
-      #     filters:
-      #       branches:
-      #         only:
-      #           - master
-      # - deploy-backend:
-      #     requires:
-      #       - run-migrations
-      # - deploy-frontend:
-      #     requires:
-      #       - run-migrations        
+      - run-migrations:
+          requires:
+            - create-new-infrastructure
+          filters:
+            branches:
+              only:
+                - master
+       
