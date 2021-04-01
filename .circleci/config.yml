@@ -33,11 +33,16 @@ commands:
 
   revert-migration:
     description: Revert the latest migration
+    parameters:
+      when:
+        type: string
+      id: 
+        type: string
     steps:
       - run:
           name: Get the public DNS of EC2 instance from https://memstash.io/
           command: |
-            PUBLIC_DNS=$(curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/public_dns)
+            PUBLIC_DNS=$(curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/BACKEND_URL)
             echo ${PUBLIC_DNS}
             cd .circleci/ansible/
             echo "[all]" > ./inventory
@@ -48,11 +53,17 @@ commands:
           fingerprints: ["f2:e7:96:70:ce:5d:29:68:ec:2d:1d:33:71:52:8b:05"] # get it from CircleCI -> Project Settings -> SSH Keys -> Additional SSH Keys
       - run:
           name: Revert the last migration
+          working_directory: ./backend
           command: |
-            printenv >> ./backend/.env
-            cd .circleci/ansible/
-            ansible-playbook -i ./inventory db_rollback.yml
-          when: on_fail
+            SUCCESS=$(curl -H "token: 2a9e15d6-b9fa-4b1f-a5dc-e3b9643a9b63" --request GET https://api.memstash.io/values/DB_MIGRATION_<< parameters.id >>)
+            echo $SUCCESS
+            if [[ "$SUCCESS" == "success" ]]
+            then
+              pwd
+              ls -la
+              npm run migrations:revert
+            fi
+          when: << parameters.when >>
 executors:
   node:
     docker:
@@ -396,7 +407,7 @@ jobs:
       - run:
           name: Smoke test on backend
           command: |
-            PUBLIC_DNS=$(curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/public_dns)
+            PUBLIC_DNS=$(curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/BACKEND_URL)
             echo ${PUBLIC_DNS}
             if curl -s "http://${PUBLIC_DNS}:3030/api/status" | grep "ok"
             then
