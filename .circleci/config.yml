@@ -9,7 +9,8 @@ commands:
       - run:
           name: Delete all files in the current S3 bucket
           command: |
-            if aws s3api head-bucket --bucket udapeople-s3bucket-${CIRCLE_WORKFLOW_ID}
+            if 
+              aws s3api head-bucket --bucket udapeople-s3bucket-${CIRCLE_WORKFLOW_ID}
             then
               aws s3 rm s3://udapeople-s3bucket-${CIRCLE_WORKFLOW_ID}/ --recursive
             fi
@@ -17,19 +18,40 @@ commands:
       - run:
           name: Delete the current AWS CloudFormation stacks
           command: |
-            if aws cloudformation wait stack-exists --stack-name udapeople-cloudfront
+            if 
+              aws cloudformation wait stack-exists --stack-name udapeople-cloudfront
             then 
               aws cloudformation delete-stack --stack-name udapeople-cloudfront
             fi
-            if aws cloudformation wait stack-exists --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID}
+            if 
+              aws cloudformation wait stack-exists --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID}
             then 
               aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID}
             fi
-            if aws cloudformation wait stack-exists --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID}
+            if 
+              aws cloudformation wait stack-exists --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID}
             then
               aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID}
             fi
           when: on_fail
+
+  write-env-variables:
+          description: Writes environment variables to env file
+          steps:
+              - run:
+                  name: Write to .env file
+                  command: |
+                      ls -la
+                      echo ENVIROMENT=development > "backend/.env"
+                      echo TYPEORM_CONNECTION=postgres >> "backend/.env"
+                      echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> "backend/.env"
+                      echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> "backend/.env"
+                      echo TYPEORM_MIGRATIONS=./src/migrations/*.ts >> "backend/.env"
+                      echo TYPEORM_HOST=$TYPEORM_HOST >> "backend/.env"
+                      echo TYPEORM_PORT=$TYPEORM_PORT >> "backend/.env"
+                      echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> "backend/.env"
+                      echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
+                      echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
 
   revert-migration:
     description: Revert the latest migration
@@ -41,9 +63,9 @@ commands:
             PUBLIC_DNS=$(curl -H "token: f3b8cd2f-30f9-4cf2-bfe6-0bf40a948839" --request GET https://api.memstash.io/values/public_dns)
             echo ${PUBLIC_DNS}
             cd .circleci/ansible/
-            echo "[all]" > ./inventory
-            echo ${PUBLIC_DNS} >> ./inventory
-            cat ./inventory
+            echo "[all]" > .circleci/ansible/inventory.txt
+            echo ${PUBLIC_DNS} >> .circleci/ansible/inventory.txt
+            cat .circleci/ansible/inventory.txt
           when: on_fail
       - add_ssh_keys:
           fingerprints: ["f2:e7:96:70:ce:5d:29:68:ec:2d:1d:33:71:52:8b:05"] # get it from CircleCI -> Project Settings -> SSH Keys -> Additional SSH Keys
@@ -53,7 +75,8 @@ commands:
           command: |
             SUCCESS=$(curl -H "token: f3b8cd2f-30f9-4cf2-bfe6-0bf40a948839" --request GET https://api.memstash.io/values/DB_MIGRATION_${CIRCLE_WORKFLOW_ID:0:7})
             echo $SUCCESS
-            if [[ "$SUCCESS" == "success" ]]
+            if 
+              [[ "$SUCCESS" == "success" ]]
             then
               pwd
               ls -la
@@ -271,7 +294,8 @@ jobs:
           name: Get and save public DNS of EC2 instance to https://memstash.io/
           command: |
             PUBLIC_DNS=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters 'Name=tag:udapeople,Values=udapeople-backend-ec2-*' --output text)
-            echo $PUBLIC_DNS
+            echo "Adding public DNS of EC2 to inventory"
+            aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters 'Name=tag:udapeople,Values=udapeople-backend-ec2-*' --output text >> .circle/ansible/inventory.txt
             curl -H "Content-Type: text/plain" -H "token: f3b8cd2f-30f9-4cf2-bfe6-0bf40a948839" --request PUT --data "${PUBLIC_DNS}" https://api.memstash.io/values/public_dns
 
 
@@ -293,9 +317,9 @@ jobs:
           name: Run migrations
           working_directory: ./backend
           command: |
-            npm install -g npm@7.7.6
-            sudo chown -R $(whoami) /usr/local/lib/
-            sudo npm run migrations > migration_status
+            cd backend
+            npm run migrations > migration.log
+            export migration_status=$(cat migration.log | grep -c "has been executed successfully")
 
       - run:
           name: Send migration results to memstash
@@ -310,7 +334,8 @@ jobs:
               curl -H "Content-Type: text/plain" -H "token: f3b8cd2f-30f9-4cf2-bfe6-0bf40a948839" --request PUT --data "failure" https://api.memstash.io/values/DB_MIGRATION_${CIRCLE_WORKFLOW_ID:0:7}
             fi
             echo "WorkflowID=${CIRCLE_WORKFLOW_ID:0:7}"
-
+      - revert-migrations
+      - destroy-environment
     #  # Here's where you will add some code to rollback on failure      
     #   - destroy_environment:
     #       id: ${CIRCLE_WORKFLOW_ID:0:7}
@@ -335,9 +360,9 @@ jobs:
             PUBLIC_DNS=$(curl -H "token: f3b8cd2f-30f9-4cf2-bfe6-0bf40a948839" --request GET https://api.memstash.io/values/public_dns)
             echo ${PUBLIC_DNS}
             cd .circleci/ansible/
-            echo "[all]" > ./inventory
-            echo ${PUBLIC_DNS} >> ./inventory
-            cat ./inventory
+            echo "[all]" > ./inventory.txt
+            echo ${PUBLIC_DNS} >> ./inventory.txt
+            cat ./inventory.txt
       - add_ssh_keys:
           fingerprints: ["ac:fe:7b:2f:0f:c5:66:5f:1d:01:4c:ef:20:17:4a:04"] # get it from CircleCI -> Project Settings -> SSH Keys -> Additional SSH Keys
       - run:
@@ -353,8 +378,8 @@ jobs:
           command: |
             pwd &&
             ls -la
-            cat inventory
-            ansible-playbook -i inventory configure-server.yml
+            cat inventory.txt
+            ansible-playbook -i inventory.txt configure-server.yml
       - revert-migration
       - destroy-aws-resource
 
@@ -402,28 +427,52 @@ jobs:
             apk add --no-cache openssh-client
             pip3 install awscli
       - run:
+          name: Get backend url
+          command: |
+              # your code here
+              export BACKEND_URL=$(sed -n 2p .circleci/ansible/inventory.txt)
+      - run:
+          name: Backend smoke test.
+          command: |
+              
+            echo "Printing Backend Url"
+            echo $(sed -n 2p .circleci/ansible/inventory.txt)
+            echo "Curling > $(sed -n 2p .circleci/ansible/inventory.txt):3030/api/status"
+            curl http://$(sed -n 2p .circleci/ansible/inventory.txt):3030/api/status
+            if 
+              curl -s http://$(sed -n 2p .circleci/ansible/inventory.txt):3030/api/status
+            then
+              exit 0
+            else
+              exit 1
+            fi
+      
+      
+      
+      - run:
           name: Smoke test on frontend
           command: |
             URL="http://udapeople-s3bucket-${CIRCLE_WORKFLOW_ID}.s3-website.us-east-1.amazonaws.com/index.html"
             echo ${URL}
-            if curl -s ${URL} | grep -q "Welcome"
+            if 
+              curl -s ${URL} | grep -q "Welcome"
             then
               return 0
             else
               return 1
             fi
-      - run:
-          name: Smoke test on backend
-          working_directory: ./backend
-          command: |
-            PUBLIC_DNS=$(curl -H "token: f3b8cd2f-30f9-4cf2-bfe6-0bf40a948839" --request GET https://api.memstash.io/values/public_dns)
-            echo ${PUBLIC_DNS}
-            if curl -s "http://${PUBLIC_DNS}:3030/api/status" | grep "ok"
-            then
-              return 0
-            else
-              return 1
-            fi
+      # - run:
+      #     name: Smoke test on backend
+      #     working_directory: ./backend
+      #     command: |
+      #       PUBLIC_DNS=$(curl -H "token: f3b8cd2f-30f9-4cf2-bfe6-0bf40a948839" --request GET https://api.memstash.io/values/public_dns)
+      #       echo ${PUBLIC_DNS}
+      #       if curl -s "http://${PUBLIC_DNS}:3030/api/status" | grep "ok"
+      #       then
+      #         return 0
+      #       else
+      #         return 1
+      #       fi
 
       - revert-migration
       - destroy-aws-resource
