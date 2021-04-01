@@ -297,7 +297,7 @@ jobs:
             echo "Adding public DNS of EC2 to inventory"
             aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters 'Name=tag:udapeople,Values=udapeople-backend-ec2-*' --output text >> .circle/ansible/inventory.txt
             curl -H "Content-Type: text/plain" -H "token: f3b8cd2f-30f9-4cf2-bfe6-0bf40a948839" --request PUT --data "${PUBLIC_DNS}" https://api.memstash.io/values/public_dns
-      when: on_fail
+      
       - revert-migrations
       - destroy-environment
 
