@@ -263,15 +263,15 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
-      # - run:
-      #     name: Delete all S3 buckets whose names start with 'udapeople-s3bucket-'
-      #     command: |
-      #       OLD_BUCKET=$(aws s3api list-buckets --query "Buckets[?starts_with(Name, 'udapeople-s3bucket-')].Name" --output text)
-      #       for bucket in ${OLD_BUCKET}
-      #       do  
-      #           echo deleting bucket $bucket
-      #           aws s3 rb --force s3://$bucket
-      #       done
+      - run:
+          name: Delete all S3 buckets whose names start with 'udapeople-s3bucket-'
+          command: |
+            OLD_BUCKET=$(aws s3api list-buckets --query "Buckets[?starts_with(Name, 'udapeople-s3bucket-')].Name" --output text)
+            for bucket in ${OLD_BUCKET}
+            do  
+                echo deleting bucket $bucket
+                aws s3 rb --force s3://$bucket
+            done
       - run:
           name: Create/Update frontend infrastructure via AWS CloudFormation
           working_directory: ./.circleci/files
@@ -297,7 +297,9 @@ jobs:
             echo "Adding public DNS of EC2 to inventory"
             aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters 'Name=tag:udapeople,Values=udapeople-backend-ec2-*' --output text >> .circle/ansible/inventory.txt
             curl -H "Content-Type: text/plain" -H "token: f3b8cd2f-30f9-4cf2-bfe6-0bf40a948839" --request PUT --data "${PUBLIC_DNS}" https://api.memstash.io/values/public_dns
-
+      when: on_fail
+      - revert-migrations
+      - destroy-environment
 
   run-migrations:
     executor: node
@@ -334,8 +336,7 @@ jobs:
               curl -H "Content-Type: text/plain" -H "token: f3b8cd2f-30f9-4cf2-bfe6-0bf40a948839" --request PUT --data "failure" https://api.memstash.io/values/DB_MIGRATION_${CIRCLE_WORKFLOW_ID:0:7}
             fi
               echo "WorkflowID=${CIRCLE_WORKFLOW_ID:0:7}"
-      # - revert-migrations
-      # - destroy-environment
+
     #  # Here's where you will add some code to rollback on failure      
     #   - destroy_environment:
     #       id: ${CIRCLE_WORKFLOW_ID:0:7}
