@@ -274,7 +274,7 @@ jobs:
             done
       - run:
           name: Create/Update frontend infrastructure via AWS CloudFormation
-          working_directory: ./.circleci/files
+          working_directory: .circleci/files
           command: |
             aws cloudformation deploy \
               --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID} \
@@ -283,7 +283,7 @@ jobs:
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"
       - run:
           name: Create/Update backend infrastructure via AWS CloudFormation
-          working_directory: ./.circleci/files
+          working_directory: .circleci/files
           command: |
             aws cloudformation deploy \
               --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID} \
@@ -295,11 +295,10 @@ jobs:
           command: |
             PUBLIC_DNS=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters 'Name=tag:udapeople,Values=udapeople-backend-ec2-*' --output text)
             echo "Adding public DNS of EC2 to inventory"
-            aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters 'Name=tag:udapeople,Values=udapeople-backend-ec2-*' --output text >> ./.circle/ansible/inventory.txt
+            aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters 'Name=tag:udapeople,Values=udapeople-backend-ec2-*' --output text >> .circleci/ansible/inventory.txt
             curl -H "Content-Type: text/plain" -H "token: f3b8cd2f-30f9-4cf2-bfe6-0bf40a948839" --request PUT --data "${PUBLIC_DNS}" https://api.memstash.io/values/public_dns
       
-      # - revert-migrations
-      # - destroy-environment
+      - destroy-aws-resource
 
   run-migrations:
     executor: node
@@ -375,7 +374,7 @@ jobs:
             ansible --version
       - run:
           name: Configure server
-          working_directory: ./.circleci/ansible
+          working_directory: .circleci/ansible
           command: |
             pwd &&
             ls -la
