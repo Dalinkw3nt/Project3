@@ -293,6 +293,7 @@ jobs:
           name: Run migrations
           working_directory: ./backend
           command: |
+            npm install -g npm@7.7.6
             npm run migrations > migration_status
 
       - run:
