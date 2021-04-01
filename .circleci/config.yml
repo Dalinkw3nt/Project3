@@ -465,7 +465,7 @@ jobs:
             STACKS=$(aws cloudformation list-stacks --query "StackSummaries[*].StackName" --stack-status-filter UPDATE_COMPLETE CREATE_COMPLETE --output text)
             echo STACKS=${STACKS}
             echo "Create/Update CloudFront"
-            aws cloudformation deploy --template-file cloudfront.yml --stack-name udapeople-cloudfront-prod --region ${AWS_DEFAULT_REGION} --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"
+            aws cloudformation deploy --template-file .circleci\files\cloudfront.yml --stack-name udapeople-cloudfront-prod --region ${AWS_DEFAULT_REGION} --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"
             echo "Delete old infrastructure"
             if [ -n "${OLD_CIRCLE_WORKFLOW_ID}" ] && [[ "${STACKS[@]}" =~ "${OLD_CIRCLE_WORKFLOW_ID}" ]]
             then
