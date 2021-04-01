@@ -425,9 +425,13 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
-            BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters 'Name=tag:udapeople,Values=udapeople-backend-ec2-*' --output text) 
-            echo ${BACKEND_IP}
-            curl http://${BACKEND_IP}:3030/api/status
+            if 
+              curl -s https://${BACKEND_URL}:3030/api/status
+            then
+              return 1
+            else
+              return 0
+            fi
 
 
       - run:
