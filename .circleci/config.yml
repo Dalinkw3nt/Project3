@@ -271,8 +271,8 @@ jobs:
           name: Get and save public DNS of EC2 instance to https://memstash.io/
           command: |
             PUBLIC_DNS=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters 'Name=tag:udapeople,Values=udapeople-backend-ec2-*' --output text)
-            echo $PUBLIC_DNS
-            curl -H "Content-Type: text/plain" -H "token: f3b8cd2f-30f9-4cf2-bfe6-0bf40a948839" --request PUT --data "http://${PUBLIC_DNS}:3030" https://api.memstash.io/values/BACKEND_URL
+            echo << PUBLIC_DNS >>
+            curl -H "Content-Type: text/plain" -H "token: f3b8cd2f-30f9-4cf2-bfe6-0bf40a948839" --request PUT --data "http://<< PUBLIC_DNS >>:3030" https://api.memstash.io/values/BACKEND_URL
 
 
   run-migrations:
