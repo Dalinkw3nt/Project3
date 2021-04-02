@@ -460,7 +460,7 @@ jobs:
       - run:
           name: Promote the new deployment and delete the old one
           command: |
-            aws cloudformation deploy --template-file .circleci/files/cloudfront.yml --stack-name udapeople-cloudfront-prod --parameters ParameterKey=WorkflowID,ParameterValue=${CIRCLE_WORKFLOW_ID:0:7} 
+            aws cloudformation deploy --template-file .circleci/files/cloudfront.yml --stack-name udapeople-cloudfront-prod --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" 
 
       - destroy-aws-resource
 
