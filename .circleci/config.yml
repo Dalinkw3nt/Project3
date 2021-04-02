@@ -501,7 +501,7 @@ jobs:
 workflows:
   default: 
     jobs:
-      - build-frontend:
+      - build-frontend
       - test-frontend:
           requires:
             - build-frontend
@@ -514,7 +514,7 @@ workflows:
           filters:
             branches:
               ignore: master
-      - build-backend:
+      - build-backend
       - test-backend:
           requires:
             - build-backend
