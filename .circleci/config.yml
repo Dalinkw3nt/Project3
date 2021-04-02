@@ -499,18 +499,9 @@ jobs:
 
 
 workflows:
-  frontend:
+  default: 
     jobs:
-      - hello:
-          filters:
-            branches:
-              ignore: master
       - build-frontend:
-          requires:
-            - hello
-          filters:
-            branches:
-              ignore: master
       - test-frontend:
           requires:
             - build-frontend
@@ -523,18 +514,7 @@ workflows:
           filters:
             branches:
               ignore: master
-  backend:
-    jobs:
-      - hello:
-          filters:
-            branches:
-              ignore: master
       - build-backend:
-          requires:
-            - hello
-          filters:
-            branches:
-              ignore: master
       - test-backend:
           requires:
             - build-backend
@@ -547,9 +527,12 @@ workflows:
           filters:
             branches:
               ignore: master
-  deploy:
-    jobs:
       - create-new-infrastructure:
+          requires:
+            - test-frontend
+            - test-backend
+            - analyze-frontend
+            - analyze-backend
           filters:
             branches:
               only: master
