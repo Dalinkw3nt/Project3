@@ -1,62 +1,51 @@
-# - name: "build package"
+---
+- name: "install dependencies."
+  become: true
+  apt:
+    name: ["nodejs", "npm", "tar"]
+    state: latest
+    update_cache: yes
+
+- name: "install pm2"
+  become: true
+  npm:
+    name: pm2
+    global: yes
+    production: yes
+    state: present
+
+- name: "Make backend dir"
+  file:
+    path: /home/ubuntu/backend
+    state: directory
+
+- name: "Copy dist files"
+  become: true
+  copy:
+    src: backend_artifact.tar.gz
+    dest: /home/ubuntu/backend/backend_artifact.tar.gz
+
+- name: Unpack dist files and start the app
+  become: true
+  shell: |
+    cd /home/ubuntu/backend
+    tar -xzf backend_artifact.tar.gz
+    rm backend_artifact.tar.gz
+- name: Build backend and prestart:prod
+  become: true
+  shell: |
+    cd /home/ubuntu/backend
+    npm run build
+    npm run prestart:prod
+# - name: Stop old backend process
+#   become: true
 #   shell: |
-#     cd /home/ubuntu/backend
-#     npm run build
-# - name: "run migrations and save status to https://memstash.io/"
-#   shell: |
-#     cd /home/ubuntu/backend
-#     npm run migrations > migrations.txt
-#     cat migrations.txt
-#     export CIRCLE_WORKFLOW_ID="{{ CIRCLE_WORKFLOW_ID }}"
-#     echo CIRCLE_WORKFLOW_ID=${CIRCLE_WORKFLOW_ID}
-#     curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID}" --request PUT --data $( grep -c "No migrations are pending" migrations.txt ) https://api.memstash.io/values/migration_status
-#   register: migration_output
+#     pm2 stop --silent backend
+#     pm2 delete --silent backend
 
-# - debug:
-#     msg: "{{ migration_output.stdout_lines }}"
-
-# - name: "use pm2 to run the node server"
-#   shell: |
-#     cd /home/ubuntu/backend
-#     pm2 start npm -- run "start:dev"
-
-  
-# ---
-  - name: "show remote environment"
-    shell: env
-
-  - name: "copy backend binaries"
-    become: yes
-    synchronize:
-      src: ../../backend/dist
-      dest: /home/ubuntu/uda_app
-      recursive: true
-
-  - name: "copy node_modules"
-    become: yes
-    synchronize:
-      src: ../../backend/node_modules
-      dest: /home/ubuntu/uda_app
-      recursive: true
-
-  - name: "delete anything that might already be running"
-    become: true
-    command: pm2 delete all
-    ignore_errors: true
-
-  - name: "start server"
-    become: true
-    command: pm2 start -f ./main.js
-    args:
-      chdir: /home/ubuntu/uda_app/dist
-    environment:
-     ENVIRONMENT: production
-     TYPEORM_CONNECTION: "{{ lookup('env', 'TYPEORM_CONNECTION') }}"
-     TYPEORM_MIGRATIONS_DIR: "./migrations"
-     TYPEORM_MIGRATIONS: "./migrations/*.js"
-     TYPEORM_ENTITIES: "./modules/domain/**/*.entity.js"
-     TYPEORM_HOST: "{{ lookup('env', 'TYPEORM_HOST') }}"
-     TYPEORM_PORT: "{{ lookup('env', 'TYPEORM_PORT') }}"
-     TYPEORM_USERNAME: "{{ lookup('env', 'TYPEORM_USERNAME') }}"
-     TYPEORM_PASSWORD: "{{ lookup('env', 'TYPEORM_PASSWORD') }}"
-     TYPEORM_DATABASE: "{{ lookup('env', 'TYPEORM_DATABASE') }}"
+- name: Start the app backend
+  become: true
+  shell: |
+    cd /home/ubuntu/backend
+    pm2 start npm --name backend -- run start
+    pm2 ls
