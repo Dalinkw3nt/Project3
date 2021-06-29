@@ -37,10 +37,10 @@ commands:
 
   revert-migration:
     description: Revert the latest migration
-    parameters:
+    # parameters:
     steps:
       - add_ssh_keys:
-          fingerprints: ["68:70:63:24:b5:73:cf:93:6b:ae:8f:36:87:5e:bc:9c"] # get it from CircleCI -> Project Settings -> SSH Keys -> Additional SSH Keys
+          fingerprints: ["ec:84:d8:18:ae:ea:5e:20:39:25:c8:8b:a8:23:0b:9e"] # get it from CircleCI -> Project Settings -> SSH Keys -> Additional SSH Keys
       - run:
           name: Revert the last migration
           working_directory: ./backend
@@ -176,7 +176,7 @@ jobs:
             npm audit fix --audit-level=critical --force
 
   build-frontend:
-    executor: node
+    executors: node
     docker:
       - image: << pipeline.parameters.circleci_image >>
     steps:
@@ -365,7 +365,7 @@ jobs:
             apk add --update tar gzip
             pip3 install awscli
       - add_ssh_keys:
-          fingerprints: ["68:70:63:24:b5:73:cf:93:6b:ae:8f:36:87:5e:bc:9c"] # get it from CircleCI -> Project Settings -> SSH Keys -> Additional SSH Keys
+          fingerprints: ["ec:84:d8:18:ae:ea:5e:20:39:25:c8:8b:a8:23:0b:9e"] # get it from CircleCI -> Project Settings -> SSH Keys -> Additional SSH Keys
       - attach_workspace:
           at: ~/
       - run:
