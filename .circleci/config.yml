@@ -412,7 +412,7 @@ jobs:
             pwd &&
             ls -la
             cat inventory.txt
-            tar -C backend -czvf artifact.tar.gz .
+            # tar -C backend -czvf artifact.tar.gz .
             cd .circleci/ansible
             ansible-playbook -i inventory.txt deploy-backend.yml --ask-become-pass
       # - revert-migration
