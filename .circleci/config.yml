@@ -386,7 +386,7 @@ jobs:
           root: .
           paths:
 
-            - /root/project/.circleci/ansible/inventory.txt
+            - project/.circleci/ansible/inventory.txt
             
       
       - run:
