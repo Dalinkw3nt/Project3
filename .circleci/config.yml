@@ -405,18 +405,7 @@ jobs:
             apk add --no-cache openssh-client
             apk add --update tar gzip
             pip3 install awscli
-      - run:
-          name: Configure server
-          working_directory: .circleci/ansible
-          command: |
-            pwd &&
-            ls -la
-            cat inventory.txt
-            # tar -C backend -czvf artifact.tar.gz .
-            # cd .circleci/ansible
-            ansible-playbook -i inventory.txt deploy-backend.yml --ask-become-pass
-      # - revert-migration
-      # - destroy-aws-resource
+
       - run:
           name: Deploy backend/Configure Server
           no_output_timeout: 60m
@@ -433,9 +422,9 @@ jobs:
             echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
             tar -C backend -czvf artifact.tar.gz .
-            cd .circleci/ansible
+            cd /root/project/.circleci/ansible
             ansible-playbook -i inventory.txt deploy-backend.yml
-      #       ansible-playbook -i inventory.txt configure-server.yml
+
 
       # - destroy-aws-resource
 

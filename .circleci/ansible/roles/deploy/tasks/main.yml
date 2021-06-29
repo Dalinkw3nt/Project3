@@ -22,15 +22,15 @@
 - name: "Copy dist files"
   become: true
   copy:
-    src: backend_artifact.tar.gz
-    dest: /home/ubuntu/backend/backend_artifact.tar.gz
+    src: backend.tar.gz
+    dest: /home/ubuntu/backend/backend.tar.gz
 
 - name: Unpack dist files and start the app
   become: true
   shell: |
     cd /home/ubuntu/backend
-    tar -xzf backend_artifact.tar.gz
-    rm backend_artifact.tar.gz
+    tar -xzf backend.tar.gz
+    rm backend.tar.gz
 - name: Build backend and prestart:prod
   become: true
   shell: |
