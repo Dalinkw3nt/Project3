@@ -276,9 +276,9 @@ jobs:
       - run:
           name: Get and save public DNS of EC2 instance to https://memstash.io/
           command: |
-            PUBLIC_DNS=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters 'Name=tag:Name,Values=test-backend-*' --output text)
+            PUBLIC_DNS=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters 'Name=tag:Name,Values=backend-test-*' --output text)
             echo "Adding public DNS of EC2 to inventory"
-            aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters 'Name=tag:Name,Values=test-backend-*' --output text >> .circleci/ansible/inventory.txt
+            aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters 'Name=tag:Name,Values=backend-test-*' --output text >> .circleci/ansible/inventory.txt
             curl -H "Content-Type: text/plain" -H "token: f3b8cd2f-30f9-4cf2-bfe6-0bf40a948839" --request PUT --data "${PUBLIC_DNS}" https://api.memstash.io/values/public_dns
       
       - run:
@@ -380,13 +380,13 @@ jobs:
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --filters "Name=tag:Name,Values=backend-test-${CIRCLE_WORKFLOW_ID}" \
-              --output text >> .circleci/ansible/inventory.txt
-            cat .circleci/ansible/inventory.txt
+              --output text >> /root/project/.circleci/ansible/inventory.txt
+            cat ./root/project/.circleci/ansible/inventory.txt
       - persist_to_workspace:
           root: .
           paths:
-            - .circleci/ansible
-            - inventory.txt
+
+            - /root/project/.circleci/ansible/inventory.txt
             
       
       - run:
@@ -413,7 +413,7 @@ jobs:
             ls -la
             cat inventory.txt
             # tar -C backend -czvf artifact.tar.gz .
-            cd .circleci/ansible
+            # cd .circleci/ansible
             ansible-playbook -i inventory.txt deploy-backend.yml --ask-become-pass
       # - revert-migration
       # - destroy-aws-resource
@@ -464,7 +464,7 @@ jobs:
           no_output_timeout: 30m
           working_directory: ./frontend
           command: |
-            BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters 'Name=tag:Name,Values=test-backend-*' --output text)
+            BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters 'Name=tag:Name,Values=backend-test-*' --output text)
             echo "Adding public DNS of EC2 to inventory"
             # API_URL=$(http://${BACKEND_IP}:3030)
             export API_URL="http://${BACKEND_IP}:3030"
@@ -500,17 +500,17 @@ jobs:
           name: Get backend URL. 
           command: |
             PUBLIC_DNS=$(aws ec2 describe-instances \
-              --filters "Name=tag:Name,Values=test-backend-${CIRCLE_WORKFLOW_ID}" --query 'Reservations[*].Instances[*].PublicDnsName' --output text)
+              --filters "Name=tag:Name,Values=backend-test-${CIRCLE_WORKFLOW_ID}" --query 'Reservations[*].Instances[*].PublicDnsName' --output text)
             echo ${PUBLIC_DNS}
       - run:
           name: Get backend IPAddress
           command: |
-            export BACKEND_URL=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:Name,Values=test-backend-*" --output text)
+            export BACKEND_URL=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:Name,Values=backend-test-*" --output text)
             echo ${BACKEND_URL}
       - run:
           name: Backend smoke test.
           command: |
-            export BACKEND_URL=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:Name,Values=test-backend-*" --output text)
+            export BACKEND_URL=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:Name,Values=backend-test-*" --output text)
             echo http://${BACKEND_URL}:3030/api/status
             curl -s http://${BACKEND_URL}:3030/api/status
             #  | grep "ok"
