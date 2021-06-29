@@ -261,10 +261,9 @@ jobs:
               --template-file frontend.yml \
               --region ${AWS_DEFAULT_REGION} \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"
-            ARN=$(aws s3 ls | grep udapeople)
+            ARN=$(aws s3 ls | grep udapeople-test)
             echo "ARN=$ARN"
-            cd .circleci/ansible
-            echo ${ARN} > inventory.txt  
+            echo ${ARN} >> .circleci/ansible/inventory.txt  
       - run:
           name: Create/Update backend infrastructure via AWS CloudFormation
           working_directory: .circleci/files
