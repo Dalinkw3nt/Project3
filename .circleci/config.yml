@@ -176,7 +176,7 @@ jobs:
             npm audit fix --audit-level=critical --force
 
   build-frontend:
-    executors: node
+    # executors: node
     docker:
       - image: << pipeline.parameters.circleci_image >>
     steps:
