@@ -230,6 +230,7 @@ jobs:
           name: Analyze the code
           working_directory: ./frontend
           command: |
+            npm install
             npm audit fix --audit-level=critical --force
             npm audit --audit-level=critical
  
