@@ -263,7 +263,7 @@ jobs:
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"
             ARN=$(aws s3 ls | grep udapeople-test)
             echo "ARN=$ARN"
-            echo ${ARN} >> .circleci/ansible/inventory.txt  
+
       - run:
           name: Create/Update backend infrastructure via AWS CloudFormation
           working_directory: .circleci/files
