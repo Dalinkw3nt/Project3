@@ -2,15 +2,15 @@ URL01: Github
     https://github.com/Dalinkw3nt/Project3
 
 URL02: Frontend
-    http://udapeople-s3bucket-e8b1f191-70df-4bf1-9b90-0d6f9dc69469.s3-website-us-east-1.amazonaws.com
+   http://udapeople-test-s3bucket-a324bb33-a7e6-47d2-a975-50a7664663dc.s3-website-us-east-1.amazonaws.com
 
 URL03: 
-    DomainName	http://d1andb1utq5kro.cloudfront.net/#/employees	Cloudfront Domain	DomainName
+    DomainName	http://d35adri8cxlwrx.cloudfront.net/#/employees	Cloudfront Domain	DomainName
     S3URL	udapeople-e8b1f19.s3.amazonaws.com
 
 URL04:PUBLIC url for backend
-    ec2-54-152-35-190.compute-1.amazonaws.com
+     ec2-3-236-220-212.compute-1.amazonaws.com 
 
 URL05: Prometheus:
-    http://ec2-18-234-185-21.compute-1.amazonaws.com:9090/targets
+    http://ec2-100-25-248-67.compute-1.amazonaws.com:9090/targets
 
