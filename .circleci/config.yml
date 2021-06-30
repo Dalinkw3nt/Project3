@@ -284,6 +284,7 @@ jobs:
       - run:
           name: Add .env vars to backend distro
           command: |
+            touch ~/project/backend/.env
             echo ENVIRONMENT=production > backend/.env
             echo TYPEORM_CONNECTION=postgres >> backend/.env
             echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> backend/.env

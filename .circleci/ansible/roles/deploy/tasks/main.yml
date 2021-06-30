@@ -34,9 +34,10 @@
 - name: Build backend and prestart:prod
   become: true
   shell: |
-    cd /home/ubuntu/backend
-    npm install
+    cd /root/project/backend
+    npm install --global
     npm run build
+
 
 # - name: Stop old backend process
 #   become: true
@@ -47,5 +48,5 @@
 - name: Start the app backend
   become: true
   shell: |
-    cd /home/ubuntu/backend
+    cd /root/project/backend
     pm2 start npm --name backend
