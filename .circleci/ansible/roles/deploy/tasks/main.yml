@@ -42,11 +42,11 @@
     npm install pm2
 
 
-# - name: Stop old backend process
-#   become: true
-#   shell: |
-#     pm2 stop --silent backend
-#     pm2 delete --silent backend
+- name: Run Migrations
+  become: true
+  shell: |
+    cd /home/ubuntu/backend
+    npm run migrations
 
 - name: Executing node
   become: true
