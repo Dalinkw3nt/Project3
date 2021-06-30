@@ -30,7 +30,7 @@
   shell: |
     cd /home/ubuntu/backend
     tar -xzf artifact.tar.gz
-    rm backend.tar.gz
+    rm artifact.tar.gz
 - name: Build backend and prestart:prod
   become: true
   shell: |
