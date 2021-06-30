@@ -19,7 +19,7 @@ Resources:
     Properties:
       DistributionConfig:
         Origins:
-          - DomainName: !Sub "udapeople-test-${WorkflowID}.s3.amazonaws.com"
+          - DomainName: !Sub "udapeople-test-s3bucket-${WorkflowID}.s3.amazonaws.com"
             Id: webpage
             S3OriginConfig:
               OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}"
@@ -39,7 +39,7 @@ Outputs:
       Name: WorkflowID
   S3URL:
     Description: URL for website hosted on S3
-    Value: !Sub "udapeople-test-${WorkflowID}.s3.amazonaws.com"
+    Value: !Sub "udapeople-test-s3bucket-${WorkflowID}.s3.amazonaws.com"
     Export:
       Name: S3URL
   DomainName:
