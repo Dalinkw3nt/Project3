@@ -35,8 +35,9 @@
   become: true
   shell: |
     cd /home/ubuntu/backend
+    npm install
     npm run build
-    npm run prestart:prod
+
 # - name: Stop old backend process
 #   become: true
 #   shell: |
@@ -47,5 +48,4 @@
   become: true
   shell: |
     cd /home/ubuntu/backend
-    pm2 start npm --name backend -- run start
-    pm2 ls
+    pm2 start npm --name backend
