@@ -546,7 +546,11 @@ jobs:
           name: Promote the new deployment and delete the old one
           working_directory: .circleci/files
           command: |
-            aws cloudformation update-stack --stack-name udapeople-test-cloudfront --template-file cloudfront.yml --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" 
+            aws cloudformation deploy \
+              --stack-name udapeople-test-${CIRCLE_WORKFLOW_ID} \
+              --template-file cloudfront.yml \
+              --region ${AWS_DEFAULT_REGION} \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"
 
       # - destroy-aws-resource
       # - revert-migration
